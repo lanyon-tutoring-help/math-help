@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lanyon Math Tutoring</title>
     <style>
         * {
@@ -320,51 +320,63 @@
             margin-bottom: 10px;
         }
 
-        /* Settings Section replaces Unblocker */
-        .settings-section {
-            max-width: 600px;
+        .unblocker-form {
+            max-width: 500px;
             margin-top: 30px;
-            background: #1f2227;
-            padding: 20px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
         }
 
-        .settings-section button {
-            padding: 15px;
-            font-size: 1em;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            background: linear-gradient(45deg, #58a6ff, #79c0ff);
-            color: #fff;
-            transition: all 0.3s ease;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .settings-section button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(88, 166, 255, 0.3);
-        }
-
-        .setting-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .setting-group label {
-            margin-bottom: 5px;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0ff;
             font-weight: 500;
         }
 
-        .setting-group input {
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background: #2b2f36;
-            color: #fff;
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: #21262d;
+            border: 2px solid #30363d;
+            border-radius: 10px;
+            color: #e0e0ff;
             font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #58a6ff, #79c0ff);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(88, 166, 255, 0.4);
+        }
+
+        .error-message {
+            color: #f85149;
+            background: rgba(248, 81, 73, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #f85149;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -385,7 +397,7 @@
             <div class="nav-button" data-section="games">
                 <div class="controller-icon"></div>
             </div>
-            <div class="nav-button" data-section="settings">
+            <div class="nav-button" data-section="unblocker">
                 <div class="padlock-icon"></div>
             </div>
         </nav>
@@ -408,139 +420,22 @@
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
             </section>
 
-            <!-- Settings Section -->
-            <section id="settings" class="content-section">
-                <h1 class="section-title">⚙️ Settings</h1>
-                <div class="settings-section">
-                    <button id="openBlankBtn">Open in about:blank</button>
-                    <button id="openBlobBtn">Open in Blob</button>
-                    
-                    <div class="setting-group">
-                        <label for="cloakInput">Cloaking (Tab Title):</label>
-                        <input type="text" id="cloakInput" placeholder="Enter tab title" />
+            <!-- Unblocker Section -->
+            <section id="unblocker" class="content-section">
+                <h1 class="section-title">🔓 Unblocker</h1>
+                <p class="welcome-text">Access restricted content:</p>
+                <form class="unblocker-form">
+                    <div class="form-group">
+                        <label for="url">Enter URL:</label>
+                        <input type="url" id="url" placeholder="https://example.com" required>
                     </div>
-                    
-                    <div class="setting-group">
-                        <label for="faviconInput">Favicon URL:</label>
-                        <input type="url" id="faviconInput" placeholder="Enter favicon URL" />
-                    </div>
-                    
-                    <button id="saveSettingsBtn">Save Settings</button>
-                </div>
+                    <button type="submit" class="btn">Launch Website</button>
+                </form>
             </section>
         </main>
     </div>
 
-    <!-- External script placeholder -->
+    <!-- EXTERNAL GAME ENGINE -->
     <script src="games-engine.js"></script>
-
-    <script>
-        // JavaScript for functionality
-        // Navigation
-        const navButtons = document.querySelectorAll('.nav-button');
-        const sections = document.querySelectorAll('.content-section');
-
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active from all
-                navButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Show corresponding section
-                const sectionId = btn.getAttribute('data-section');
-                sections.forEach(sec => {
-                    sec.classList.remove('active');
-                    if (sec.id === sectionId) {
-                        sec.classList.add('active');
-                    }
-                });
-            });
-        });
-
-        // Loading screen hide after load
-        window.addEventListener('load', () => {
-            document.getElementById('loadingScreen').classList.add('hidden');
-        });
-
-        // Settings buttons
-        document.getElementById('openBlankBtn').addEventListener('click', () => {
-            const url = 'about:blank';
-            window.open(url, '_blank');
-        });
-
-        document.getElementById('openBlobBtn').addEventListener('click', () => {
-            const url = document.createElement('a');
-            url.href = window.location.href;
-            fetch(url.href)
-                .then(response => response.blob())
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    window.open(blobUrl, '_blank');
-                });
-        });
-
-        const cloakInput = document.getElementById('cloakInput');
-        const faviconInput = document.getElementById('faviconInput');
-
-        // Load saved settings (if any, in local storage)
-        function loadSettings() {
-            const tabTitle = localStorage.getItem('tabTitle');
-            const faviconUrl = localStorage.getItem('faviconUrl');
-
-            if (tabTitle !== null) {
-                cloakInput.value = tabTitle;
-                document.title = tabTitle;
-            }
-            if (faviconUrl !== null) {
-                faviconInput.value = faviconUrl;
-                setFavicon(faviconUrl);
-            }
-        }
-
-        function setFavicon(url) {
-            let link = document.querySelector("link[rel~='icon']");
-            if (!link) {
-                link = document.createElement('link');
-                link.rel = 'icon';
-                document.head.appendChild(link);
-            }
-            link.href = url;
-        }
-
-        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-            const tabTitle = cloakInput.value.trim();
-            const faviconUrl = faviconInput.value.trim();
-
-            if (tabTitle !== '') {
-                document.title = tabTitle;
-                localStorage.setItem('tabTitle', tabTitle);
-            }
-
-            if (faviconUrl !== '') {
-                setFavicon(faviconUrl);
-                localStorage.setItem('faviconUrl', faviconUrl);
-            }
-        });
-
-        // Implement the new buttons
-        document.getElementById('openBlankBtn').addEventListener('click', () => {
-            window.open('about:blank', '_blank');
-        });
-
-        document.getElementById('openBlobBtn').addEventListener('click', () => {
-            fetch(window.location.href)
-                .then(response => response.blob())
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    window.open(blobUrl, '_blank');
-                });
-        });
-
-        // Initialize settings
-        loadSettings();
-
-        // Additional: Apply cloaking and favicon updates immediately when saved
-        // (Already handled by the save button above)
-    </script>
 </body>
 </html>
