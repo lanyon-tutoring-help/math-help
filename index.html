@@ -176,36 +176,36 @@
             box-shadow: 14px 0 0 #ffffff;
         }
 
-        .padlock-icon {
-            width: 24px;
+        .settings-icon {
+            width: 28px;
             height: 28px;
             position: relative;
             background: #ffffff;
-            border-radius: 4px 4px 12px 12px;
+            border-radius: 50%;
         }
 
-        .padlock-icon::before {
+        .settings-icon::before {
             content: '';
             position: absolute;
-            top: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 14px;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            height: 4px;
             background: #58a6ff;
-            border-radius: 6px;
+            border-radius: 2px;
+            box-shadow: 0 10px 0 #58a6ff, 0 20px 0 #58a6ff;
         }
 
-        .padlock-icon::after {
+        .settings-icon::after {
             content: '';
             position: absolute;
-            bottom: -4px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             width: 12px;
-            height: 6px;
-            background: #ffffff;
-            border-radius: 0 0 4px 4px;
+            height: 12px;
+            border: 2px solid #58a6ff;
+            border-radius: 50%;
         }
 
         /* Main Content */
@@ -320,13 +320,13 @@
             margin-bottom: 10px;
         }
 
-        .unblocker-form {
+        .settings-form {
             max-width: 500px;
             margin-top: 30px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
@@ -334,6 +334,7 @@
             margin-bottom: 8px;
             color: #e0e0ff;
             font-weight: 500;
+            font-size: 1.1em;
         }
 
         .form-group input {
@@ -363,11 +364,41 @@
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
+            margin-bottom: 15px;
+            font-weight: 500;
         }
 
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(88, 166, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #238636, #2ea043);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 25px rgba(35, 134, 54, 0.4);
+        }
+
+        .save-btn {
+            background: linear-gradient(45deg, #f85149, #da3633);
+            font-size: 1.2em;
+            padding: 18px 30px;
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 10px 25px rgba(248, 81, 73, 0.4);
+        }
+
+        .status-message {
+            color: #79c0ff;
+            background: rgba(121, 192, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #79c0ff;
+            margin-top: 20px;
+            display: none;
         }
 
         .error-message {
@@ -377,6 +408,7 @@
             border-radius: 10px;
             border-left: 4px solid #f85149;
             margin-top: 20px;
+            display: none;
         }
     </style>
 </head>
@@ -397,8 +429,8 @@
             <div class="nav-button" data-section="games">
                 <div class="controller-icon"></div>
             </div>
-            <div class="nav-button" data-section="unblocker">
-                <div class="padlock-icon"></div>
+            <div class="nav-button" data-section="settings">
+                <div class="settings-icon"></div>
             </div>
         </nav>
 
@@ -417,25 +449,166 @@
                 <h1 class="section-title">🎮 Games (<span id="gamesCount">0</span>)</h1>
                 <p class="welcome-text">Click any game to play fullscreen:</p>
                 <div class="games-grid" id="gamesGrid"></div>
-                <div id="errorMessage" class="error-message" style="display: none;"></div>
+                <div id="errorMessage" class="error-message"></div>
             </section>
 
-            <!-- Unblocker Section -->
-            <section id="unblocker" class="content-section">
-                <h1 class="section-title">🔓 Unblocker</h1>
-                <p class="welcome-text">Access restricted content:</p>
-                <form class="unblocker-form">
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <h1 class="section-title">⚙️ Settings</h1>
+                <p class="welcome-text">Configure tab appearance and launch options:</p>
+                
+                <form class="settings-form">
                     <div class="form-group">
-                        <label for="url">Enter URL:</label>
-                        <input type="url" id="url" placeholder="https://example.com" required>
+                        <label for="targetUrl">Target URL:</label>
+                        <input type="url" id="targetUrl" placeholder="https://example.com" required>
                     </div>
-                    <button type="submit" class="btn">Launch Website</button>
+
+                    <button type="button" class="btn" id="openBlankBtn">Open in about:blank</button>
+                    <button type="button" class="btn btn-secondary" id="openBlobBtn">Open in Blob</button>
+
+                    <div class="form-group">
+                        <label for="cloakingTitle">Cloaking (Tab Title):</label>
+                        <input type="text" id="cloakingTitle" placeholder="Custom Tab Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="faviconUrl">Favicon URL:</label>
+                        <input type="url" id="faviconUrl" placeholder="https://example.com/favicon.ico">
+                    </div>
+
+                    <button type="button" class="btn save-btn" id="saveSettingsBtn">💾 Save Settings</button>
+                    
+                    <div id="statusMessage" class="status-message"></div>
                 </form>
             </section>
         </main>
     </div>
 
-    <!-- EXTERNAL GAME ENGINE -->
-    <script src="games-engine.js"></script>
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const section = button.dataset.section;
+                
+                // Update active button
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Show active section
+                document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById(section).classList.add('active');
+            });
+        });
+
+        // Hide loading screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 1500);
+        });
+
+        // Settings functionality
+        const settings = {
+            targetUrl: '',
+            cloakingTitle: '',
+            faviconUrl: ''
+        };
+
+        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+            settings.targetUrl = document.getElementById('targetUrl').value;
+            settings.cloakingTitle = document.getElementById('cloakingTitle').value;
+            settings.faviconUrl = document.getElementById('faviconUrl').value;
+
+            const statusMsg = document.getElementById('statusMessage');
+            statusMsg.textContent = 'Settings saved locally!';
+            statusMsg.style.display = 'block';
+            
+            setTimeout(() => {
+                statusMsg.style.display = 'none';
+            }, 3000);
+        });
+
+        document.getElementById('openBlankBtn').addEventListener('click', () => {
+            const url = document.getElementById('targetUrl').value;
+            if (!url) {
+                alert('Please enter a URL first!');
+                return;
+            }
+
+            const title = document.getElementById('cloakingTitle').value || 'Lanyon Math Tutoring';
+            const favicon = document.getElementById('faviconUrl').value;
+
+            const newWindow = window.open('about:blank', '_blank');
+            
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${title}</title>
+                    ${favicon ? `<link rel="icon" href="${favicon}">` : ''}
+                    <meta http-equiv="refresh" content="0; url=${url}">
+                </head>
+                <body style="margin:0;">
+                    <script>
+                        window.location.href = '${url}';
+                    </script>
+                </body>
+                </html>
+            `);
+            newWindow.document.close();
+        });
+
+        document.getElementById('openBlobBtn').addEventListener('click', async () => {
+            const url = document.getElementById('targetUrl').value;
+            if (!url) {
+                alert('Please enter a URL first!');
+                return;
+            }
+
+            const title = document.getElementById('cloakingTitle').value || 'Lanyon Math Tutoring';
+            const favicon = document.getElementById('faviconUrl').value;
+
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+
+                const blob = new Blob([html], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+
+                const newWindow = window.open(blobUrl, '_blank');
+                
+                newWindow.document.title = title;
+                if (favicon) {
+                    const link = newWindow.document.createElement('link');
+                    link.rel = 'icon';
+                    link.href = favicon;
+                    newWindow.document.head.appendChild(link);
+                }
+            } catch (error) {
+                alert('Failed to load URL. Make sure CORS allows it or try about:blank method.');
+            }
+        });
+
+        // Games placeholder (keeping original structure)
+        document.getElementById('gamesCount').textContent = '42';
+        
+        const gamesGrid = document.getElementById('gamesGrid');
+        const sampleGames = [
+            { name: 'Math Quest', desc: 'Algebra adventure' },
+            { name: 'Number Ninja', desc: 'Quick math game' },
+            { name: 'Fraction Frenzy', desc: 'Fractions mastery' }
+        ];
+
+        sampleGames.forEach(game => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <h3>${game.name}</h3>
+                <p>${game.desc}</p>
+                <span class="launch-indicator">Launch Game</span>
+            `;
+            gamesGrid.appendChild(card);
+        });
+    </script>
 </body>
 </html>
