@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lanyon Math Tutoring</title>
     <style>
         * {
@@ -176,36 +176,36 @@
             box-shadow: 14px 0 0 #ffffff;
         }
 
-        .settings-icon {
-            width: 28px;
+        .padlock-icon {
+            width: 24px;
             height: 28px;
             position: relative;
             background: #ffffff;
-            border-radius: 50%;
+            border-radius: 4px 4px 12px 12px;
         }
 
-        .settings-icon::before {
+        .padlock-icon::before {
             content: '';
             position: absolute;
-            top: 4px;
-            left: 4px;
-            right: 4px;
-            height: 4px;
-            background: #58a6ff;
-            border-radius: 2px;
-            box-shadow: 0 10px 0 #58a6ff, 0 20px 0 #58a6ff;
-        }
-
-        .settings-icon::after {
-            content: '';
-            position: absolute;
-            top: 50%;
+            top: 6px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             width: 12px;
-            height: 12px;
-            border: 2px solid #58a6ff;
-            border-radius: 50%;
+            height: 14px;
+            background: #58a6ff;
+            border-radius: 6px;
+        }
+
+        .padlock-icon::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 6px;
+            background: #ffffff;
+            border-radius: 0 0 4px 4px;
         }
 
         /* Main Content */
@@ -320,95 +320,51 @@
             margin-bottom: 10px;
         }
 
-        .settings-form {
-            max-width: 500px;
+        /* Settings Section replaces Unblocker */
+        .settings-section {
+            max-width: 600px;
             margin-top: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #e0e0ff;
-            font-weight: 500;
-            font-size: 1.1em;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 15px;
-            background: #21262d;
-            border: 2px solid #30363d;
+            background: #1f2227;
+            padding: 20px;
             border-radius: 10px;
-            color: #e0e0ff;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .settings-section button {
+            padding: 15px;
             font-size: 1em;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #58a6ff;
-            box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
-        }
-
-        .btn {
-            background: linear-gradient(45deg, #58a6ff, #79c0ff);
-            color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 1.1em;
+            border-radius: 8px;
             cursor: pointer;
+            background: linear-gradient(45deg, #58a6ff, #79c0ff);
+            color: #fff;
             transition: all 0.3s ease;
-            width: 100%;
-            margin-bottom: 15px;
+        }
+
+        .settings-section button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(88, 166, 255, 0.3);
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-group label {
+            margin-bottom: 5px;
             font-weight: 500;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(88, 166, 255, 0.4);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(45deg, #238636, #2ea043);
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 0 10px 25px rgba(35, 134, 54, 0.4);
-        }
-
-        .save-btn {
-            background: linear-gradient(45deg, #f85149, #da3633);
-            font-size: 1.2em;
-            padding: 18px 30px;
-        }
-
-        .save-btn:hover {
-            box-shadow: 0 10px 25px rgba(248, 81, 73, 0.4);
-        }
-
-        .status-message {
-            color: #79c0ff;
-            background: rgba(121, 192, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #79c0ff;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .error-message {
-            color: #f85149;
-            background: rgba(248, 81, 73, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #f85149;
-            margin-top: 20px;
-            display: none;
+        .setting-group input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #2b2f36;
+            color: #fff;
+            font-size: 1em;
         }
     </style>
 </head>
@@ -430,7 +386,7 @@
                 <div class="controller-icon"></div>
             </div>
             <div class="nav-button" data-section="settings">
-                <div class="settings-icon"></div>
+                <div class="padlock-icon"></div>
             </div>
         </nav>
 
@@ -449,166 +405,142 @@
                 <h1 class="section-title">🎮 Games (<span id="gamesCount">0</span>)</h1>
                 <p class="welcome-text">Click any game to play fullscreen:</p>
                 <div class="games-grid" id="gamesGrid"></div>
-                <div id="errorMessage" class="error-message"></div>
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
             </section>
 
             <!-- Settings Section -->
             <section id="settings" class="content-section">
                 <h1 class="section-title">⚙️ Settings</h1>
-                <p class="welcome-text">Configure tab appearance and launch options:</p>
-                
-                <form class="settings-form">
-                    <div class="form-group">
-                        <label for="targetUrl">Target URL:</label>
-                        <input type="url" id="targetUrl" placeholder="https://example.com" required>
-                    </div>
-
-                    <button type="button" class="btn" id="openBlankBtn">Open in about:blank</button>
-                    <button type="button" class="btn btn-secondary" id="openBlobBtn">Open in Blob</button>
-
-                    <div class="form-group">
-                        <label for="cloakingTitle">Cloaking (Tab Title):</label>
-                        <input type="text" id="cloakingTitle" placeholder="Custom Tab Name">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="faviconUrl">Favicon URL:</label>
-                        <input type="url" id="faviconUrl" placeholder="https://example.com/favicon.ico">
-                    </div>
-
-                    <button type="button" class="btn save-btn" id="saveSettingsBtn">💾 Save Settings</button>
+                <div class="settings-section">
+                    <button id="openBlankBtn">Open in about:blank</button>
+                    <button id="openBlobBtn">Open in Blob</button>
                     
-                    <div id="statusMessage" class="status-message"></div>
-                </form>
+                    <div class="setting-group">
+                        <label for="cloakInput">Cloaking (Tab Title):</label>
+                        <input type="text" id="cloakInput" placeholder="Enter tab title" />
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label for="faviconInput">Favicon URL:</label>
+                        <input type="url" id="faviconInput" placeholder="Enter favicon URL" />
+                    </div>
+                    
+                    <button id="saveSettingsBtn">Save Settings</button>
+                </div>
             </section>
         </main>
     </div>
 
+    <!-- External script placeholder -->
+    <script src="games-engine.js"></script>
+
     <script>
+        // JavaScript for functionality
         // Navigation
-        document.querySelectorAll('.nav-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const section = button.dataset.section;
-                
-                // Update active button
-                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                // Show active section
-                document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-                document.getElementById(section).classList.add('active');
+        const navButtons = document.querySelectorAll('.nav-button');
+        const sections = document.querySelectorAll('.content-section');
+
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active from all
+                navButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Show corresponding section
+                const sectionId = btn.getAttribute('data-section');
+                sections.forEach(sec => {
+                    sec.classList.remove('active');
+                    if (sec.id === sectionId) {
+                        sec.classList.add('active');
+                    }
+                });
             });
         });
 
-        // Hide loading screen
+        // Loading screen hide after load
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-            }, 1500);
+            document.getElementById('loadingScreen').classList.add('hidden');
         });
 
-        // Settings functionality
-        const settings = {
-            targetUrl: '',
-            cloakingTitle: '',
-            faviconUrl: ''
-        };
+        // Settings buttons
+        document.getElementById('openBlankBtn').addEventListener('click', () => {
+            const url = 'about:blank';
+            window.open(url, '_blank');
+        });
+
+        document.getElementById('openBlobBtn').addEventListener('click', () => {
+            const url = document.createElement('a');
+            url.href = window.location.href;
+            fetch(url.href)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    window.open(blobUrl, '_blank');
+                });
+        });
+
+        const cloakInput = document.getElementById('cloakInput');
+        const faviconInput = document.getElementById('faviconInput');
+
+        // Load saved settings (if any, in local storage)
+        function loadSettings() {
+            const tabTitle = localStorage.getItem('tabTitle');
+            const faviconUrl = localStorage.getItem('faviconUrl');
+
+            if (tabTitle !== null) {
+                cloakInput.value = tabTitle;
+                document.title = tabTitle;
+            }
+            if (faviconUrl !== null) {
+                faviconInput.value = faviconUrl;
+                setFavicon(faviconUrl);
+            }
+        }
+
+        function setFavicon(url) {
+            let link = document.querySelector("link[rel~='icon']");
+            if (!link) {
+                link = document.createElement('link');
+                link.rel = 'icon';
+                document.head.appendChild(link);
+            }
+            link.href = url;
+        }
 
         document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-            settings.targetUrl = document.getElementById('targetUrl').value;
-            settings.cloakingTitle = document.getElementById('cloakingTitle').value;
-            settings.faviconUrl = document.getElementById('faviconUrl').value;
+            const tabTitle = cloakInput.value.trim();
+            const faviconUrl = faviconInput.value.trim();
 
-            const statusMsg = document.getElementById('statusMessage');
-            statusMsg.textContent = 'Settings saved locally!';
-            statusMsg.style.display = 'block';
-            
-            setTimeout(() => {
-                statusMsg.style.display = 'none';
-            }, 3000);
+            if (tabTitle !== '') {
+                document.title = tabTitle;
+                localStorage.setItem('tabTitle', tabTitle);
+            }
+
+            if (faviconUrl !== '') {
+                setFavicon(faviconUrl);
+                localStorage.setItem('faviconUrl', faviconUrl);
+            }
         });
 
+        // Implement the new buttons
         document.getElementById('openBlankBtn').addEventListener('click', () => {
-            const url = document.getElementById('targetUrl').value;
-            if (!url) {
-                alert('Please enter a URL first!');
-                return;
-            }
-
-            const title = document.getElementById('cloakingTitle').value || 'Lanyon Math Tutoring';
-            const favicon = document.getElementById('faviconUrl').value;
-
-            const newWindow = window.open('about:blank', '_blank');
-            
-            newWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>${title}</title>
-                    ${favicon ? `<link rel="icon" href="${favicon}">` : ''}
-                    <meta http-equiv="refresh" content="0; url=${url}">
-                </head>
-                <body style="margin:0;">
-                    <script>
-                        window.location.href = '${url}';
-                    </script>
-                </body>
-                </html>
-            `);
-            newWindow.document.close();
+            window.open('about:blank', '_blank');
         });
 
-        document.getElementById('openBlobBtn').addEventListener('click', async () => {
-            const url = document.getElementById('targetUrl').value;
-            if (!url) {
-                alert('Please enter a URL first!');
-                return;
-            }
-
-            const title = document.getElementById('cloakingTitle').value || 'Lanyon Math Tutoring';
-            const favicon = document.getElementById('faviconUrl').value;
-
-            try {
-                const response = await fetch(url);
-                const html = await response.text();
-
-                const blob = new Blob([html], { type: 'text/html' });
-                const blobUrl = URL.createObjectURL(blob);
-
-                const newWindow = window.open(blobUrl, '_blank');
-                
-                newWindow.document.title = title;
-                if (favicon) {
-                    const link = newWindow.document.createElement('link');
-                    link.rel = 'icon';
-                    link.href = favicon;
-                    newWindow.document.head.appendChild(link);
-                }
-            } catch (error) {
-                alert('Failed to load URL. Make sure CORS allows it or try about:blank method.');
-            }
+        document.getElementById('openBlobBtn').addEventListener('click', () => {
+            fetch(window.location.href)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    window.open(blobUrl, '_blank');
+                });
         });
 
-        // Games placeholder (keeping original structure)
-        document.getElementById('gamesCount').textContent = '42';
-        
-        const gamesGrid = document.getElementById('gamesGrid');
-        const sampleGames = [
-            { name: 'Math Quest', desc: 'Algebra adventure' },
-            { name: 'Number Ninja', desc: 'Quick math game' },
-            { name: 'Fraction Frenzy', desc: 'Fractions mastery' }
-        ];
+        // Initialize settings
+        loadSettings();
 
-        sampleGames.forEach(game => {
-            const card = document.createElement('div');
-            card.className = 'game-card';
-            card.innerHTML = `
-                <h3>${game.name}</h3>
-                <p>${game.desc}</p>
-                <span class="launch-indicator">Launch Game</span>
-            `;
-            gamesGrid.appendChild(card);
-        });
+        // Additional: Apply cloaking and favicon updates immediately when saved
+        // (Already handled by the save button above)
     </script>
 </body>
 </html>
