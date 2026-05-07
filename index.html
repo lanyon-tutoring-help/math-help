@@ -1,504 +1,803 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lanyon Math Tutoring</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lanyon Math Tutoring</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a23 0%, #1a1a3e 50%, #0f0f2a 100%);
-            color: #e0e0ff;
-            height: 100vh;
-            overflow: hidden;
-        }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0a0a23 0%, #1a1a3e 50%, #0f0f2a 100%);
+        color: #e0e0ff;
+        height: 100vh;
+        overflow: hidden;
+    }
 
-        .container {
-            display: flex;
-            height: 100vh;
-        }
+    .container {
+        display: flex;
+        height: 100vh;
+    }
 
-        /* Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, #0a0a23 0%, #1a1a3e 50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
+    /* Loading Screen */
+    .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #0a0a23 0%, #1a1a3e 50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+    }
 
-        .loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+    .loading-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
 
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(88, 166, 255, 0.2);
-            border-top: 4px solid #58a6ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(88, 166, 255, 0.2);
+        border-top: 4px solid #58a6ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 
-        /* Sidebar */
-        .sidebar {
-            width: 80px;
-            background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
-            border-right: 2px solid #30363d;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.5);
-            transition: width 0.3s ease;
-            z-index: 1000;
-        }
+    /* Sidebar */
+    .sidebar {
+        width: 80px;
+        background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+        border-right: 2px solid #30363d;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.5);
+        transition: width 0.3s ease;
+        z-index: 1000;
+    }
 
-        .sidebar:hover {
-            width: 90px;
-        }
+    .sidebar:hover {
+        width: 90px;
+    }
 
-        .nav-button {
-            width: 60px;
-            height: 60px;
-            margin: 15px 0;
-            background: linear-gradient(145deg, #21262d, #161b22);
-            border: 2px solid transparent;
-            border-radius: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+    .nav-button {
+        width: 60px;
+        height: 60px;
+        margin: 15px 0;
+        background: linear-gradient(145deg, #21262d, #161b22);
+        border: 2px solid transparent;
+        border-radius: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .nav-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
+    .nav-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
 
-        .nav-button:hover::before {
-            left: 100%;
-        }
+    .nav-button:hover::before {
+        left: 100%;
+    }
 
-        .nav-button:hover {
-            border-color: #58a6ff;
-            background: linear-gradient(145deg, #238636, #1a7f37);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(88, 166, 255, 0.3);
-        }
+    .nav-button:hover {
+        border-color: #58a6ff;
+        background: linear-gradient(145deg, #238636, #1a7f37);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(88, 166, 255, 0.3);
+    }
 
-        .nav-button.active {
-            border-color: #f85149;
-            background: linear-gradient(145deg, #da3633, #bc2c2c);
-            box-shadow: 0 0 20px rgba(248, 81, 73, 0.5);
-        }
+    .nav-button.active {
+        border-color: #f85149;
+        background: linear-gradient(145deg, #da3633, #bc2c2c);
+        box-shadow: 0 0 20px rgba(248, 81, 73, 0.5);
+    }
 
-        /* Icons */
-        .home-icon {
-            width: 28px;
-            height: 28px;
-            background: 
-                conic-gradient(from 225deg at 50% 0%, #ffffff 90deg, #58a6ff 90deg 180deg, #ffffff 180deg 270deg, #58a6ff 270deg);
-            clip-path: polygon(50% 0%, 0% 70%, 25% 100%, 50% 85%, 75% 100%, 100% 70%);
-            position: relative;
-        }
+    /* Icons */
+    .home-icon {
+        width: 28px;
+        height: 28px;
+        background: 
+            conic-gradient(from 225deg at 50% 0%, #ffffff 90deg, #58a6ff 90deg 180deg, #ffffff 180deg 270deg, #58a6ff 270deg);
+        clip-path: polygon(50% 0%, 0% 70%, 25% 100%, 50% 85%, 75% 100%, 100% 70%);
+        position: relative;
+    }
 
-        .home-icon::before {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 15px;
-            background: #ffffff;
-            clip-path: polygon(0% 0%, 50% 100%, 100% 0%);
-            border-radius: 2px;
-        }
+    .home-icon::before {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 15px;
+        background: #ffffff;
+        clip-path: polygon(0% 0%, 50% 100%, 100% 0%);
+        border-radius: 2px;
+    }
 
-        .controller-icon {
-            width: 32px;
-            height: 24px;
-            position: relative;
-            background: #ffffff;
-            border-radius: 8px;
-        }
+    .controller-icon {
+        width: 32px;
+        height: 24px;
+        position: relative;
+        background: #ffffff;
+        border-radius: 8px;
+    }
 
-        .controller-icon::before {
-            content: '';
-            position: absolute;
-            left: 4px;
-            top: 4px;
-            right: 4px;
-            height: 8px;
-            background: #58a6ff;
-            border-radius: 4px;
-        }
+    .controller-icon::before {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 4px;
+        right: 4px;
+        height: 8px;
+        background: #58a6ff;
+        border-radius: 4px;
+    }
 
-        .controller-icon::after {
-            content: '';
-            position: absolute;
-            left: 8px;
-            top: 14px;
-            width: 6px;
-            height: 6px;
-            background: #ffffff;
-            border-radius: 50%;
-            box-shadow: 14px 0 0 #ffffff;
-        }
+    .controller-icon::after {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 14px;
+        width: 6px;
+        height: 6px;
+        background: #ffffff;
+        border-radius: 50%;
+        box-shadow: 14px 0 0 #ffffff;
+    }
 
-        .padlock-icon {
-            width: 24px;
-            height: 28px;
-            position: relative;
-            background: #ffffff;
-            border-radius: 4px 4px 12px 12px;
-        }
+    .padlock-icon {
+        width: 24px;
+        height: 28px;
+        position: relative;
+        background: #ffffff;
+        border-radius: 4px 4px 12px 12px;
+    }
 
-        .padlock-icon::before {
-            content: '';
-            position: absolute;
-            top: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 14px;
-            background: #58a6ff;
-            border-radius: 6px;
-        }
+    .padlock-icon::before {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 14px;
+        background: #58a6ff;
+        border-radius: 6px;
+    }
 
-        .padlock-icon::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 6px;
-            background: #ffffff;
-            border-radius: 0 0 4px 4px;
-        }
+    .padlock-icon::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 6px;
+        background: #ffffff;
+        border-radius: 0 0 4px 4px;
+    }
 
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-        }
+    /* Main Content */
+    .main-content {
+        flex: 1;
+        padding: 40px;
+        overflow-y: auto;
+    }
 
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s ease-in;
-        }
+    .content-section {
+        display: none;
+        animation: fadeIn 0.5s ease-in;
+    }
 
-        .content-section.active {
-            display: block;
-        }
+    .content-section.active {
+        display: block;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        .section-title {
-            font-size: 2.5em;
-            background: linear-gradient(45deg, #58a6ff, #79c0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(88, 166, 255, 0.5);
-        }
+    .section-title {
+        font-size: 2.5em;
+        background: linear-gradient(45deg, #58a6ff, #79c0ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 20px;
+        text-shadow: 0 0 30px rgba(88, 166, 255, 0.5);
+    }
 
-        .welcome-text {
-            font-size: 1.2em;
-            line-height: 1.6;
-            color: #b0b0d0;
-            max-width: 600px;
-            margin-bottom: 30px;
-        }
+    .welcome-text {
+        font-size: 1.2em;
+        line-height: 1.6;
+        color: #b0b0d0;
+        max-width: 600px;
+        margin-bottom: 30px;
+    }
 
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
+    .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
 
-        .game-card {
-            background: linear-gradient(145deg, #21262d, #161b22);
-            border-radius: 20px;
-            padding: 30px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border: 2px solid #30363d;
-            position: relative;
-            overflow: hidden;
-            height: 140px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+    .game-card {
+        background: linear-gradient(145deg, #21262d, #161b22);
+        border-radius: 20px;
+        padding: 30px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        border: 2px solid #30363d;
+        position: relative;
+        overflow: hidden;
+        height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #58a6ff, #79c0ff, #f85149, #58a6ff);
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
-        }
+    .game-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #58a6ff, #79c0ff, #f85149, #58a6ff);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
 
-        .game-card:hover {
-            transform: translateY(-12px) scale(1.03);
-            box-shadow: 0 25px 50px rgba(88, 166, 255, 0.4);
-            border-color: #58a6ff;
-        }
+    .game-card:hover {
+        transform: translateY(-12px) scale(1.03);
+        box-shadow: 0 25px 50px rgba(88, 166, 255, 0.4);
+        border-color: #58a6ff;
+    }
 
-        .game-card:hover::before {
-            transform: scaleX(1);
-        }
+    .game-card:hover::before {
+        transform: scaleX(1);
+    }
 
-        .game-card h3 {
-            color: #58a6ff;
-            margin-bottom: 12px;
-            font-size: 1.4em;
-            font-weight: 600;
-            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
-        }
+    .game-card h3 {
+        color: #58a6ff;
+        margin-bottom: 12px;
+        font-size: 1.4em;
+        font-weight: 600;
+        text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+    }
 
-        .game-card p {
-            color: #b0b0d0;
-            font-size: 0.95em;
-            margin-bottom: 15px;
-        }
+    .game-card p {
+        color: #b0b0d0;
+        font-size: 0.95em;
+        margin-bottom: 15px;
+    }
 
-        .launch-indicator {
-            font-size: 0.85em;
-            color: #58a6ff;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+    .launch-indicator {
+        font-size: 0.85em;
+        color: #58a6ff;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
 
-        .games-count {
-            color: #79c0ff;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
+    .games-count {
+        color: #79c0ff;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
 
-        .unblocker-form {
-            max-width: 500px;
-            margin-top: 30px;
-        }
+    .unblocker-form {
+        max-width: 500px;
+        margin-top: 30px;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #e0e0ff;
-            font-weight: 500;
-        }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #e0e0ff;
+        font-weight: 500;
+    }
 
-        .form-group input {
-            width: 100%;
-            padding: 15px;
-            background: #21262d;
-            border: 2px solid #30363d;
-            border-radius: 10px;
-            color: #e0e0ff;
-            font-size: 1em;
-            transition: border-color 0.3s ease;
-        }
+    /* Aligning textbox and button horizontally */
+    .form-group .tab-input {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: #58a6ff;
-            box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
-        }
+    .form-group input {
+        flex: 1;
+        padding: 15px;
+        background: #21262d;
+        border: 2px solid #30363d;
+        border-radius: 10px;
+        color: #e0e0ff;
+        font-size: 1em;
+        transition: border-color 0.3s ease;
+    }
 
-        .btn {
-            background: linear-gradient(45deg, #58a6ff, #79c0ff);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
+    .form-group input:focus {
+        outline: none;
+        border-color: #58a6ff;
+        box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+    }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(88, 166, 255, 0.4);
-        }
+    /* Make buttons same height as input for alignment */
+    .settings-btn {
+        background: linear-gradient(45deg, #58a6ff, #79c0ff);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        height: 52px; /* match input height + padding */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .error-message {
-            color: #f85149;
-            background: rgba(248, 81, 73, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #f85149;
-            margin-top: 20px;
-        }
-    </style>
+    .settings-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(88, 166, 255, 0.4);
+    }
+
+    .error-message {
+        color: #f85149;
+        background: rgba(248, 81, 73, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #f85149;
+        margin-top: 20px;
+    }
+
+    /* Settings Styles */
+    .settings-menu {
+        max-width: 500px;
+    }
+
+    .setting-group {
+        margin-bottom: 25px;
+    }
+
+    .setting-group label {
+        display: block;
+        margin-bottom: 10px;
+        color: #e0e0ff;
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+
+    /* Keep input and button aligned horizontally */
+    .tab-input {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* fixed height for inputs and buttons for alignment */
+    .tab-input input {
+        flex: 1;
+        padding: 8px 12px;
+        background: #21262d;
+        border: 2px solid #30363d;
+        border-radius: 8px;
+        color: #e0e0ff;
+        font-size: 0.95em;
+        height: 40px;
+    }
+
+    /* Keep buttons same height as input */
+    .settings-btn {
+        background: linear-gradient(45deg, #58a6ff, #79c0ff);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .buttons-container {
+        margin-top: 20px;
+    }
+</style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="spinner"></div>
-        <div style="font-size: 1.2em; color: #58a6ff; margin-bottom: 10px;">Initializing...</div>
-        <div style="color: #b0b0d0; font-size: 0.9em;">Loading game engine</div>
-    </div>
+<!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <div style="font-size: 1.2em; color: #58a6ff; margin-bottom: 10px;">Initializing...</div>
+    <div style="color: #b0b0d0; font-size: 0.9em;">Loading game engine</div>
+</div>
 
-    <div class="container">
-        <!-- Sidebar -->
-        <nav class="sidebar">
-            <div class="nav-button active" data-section="home">
-                <div class="home-icon"></div>
+<div class="container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="nav-button active" data-section="home">
+            <div class="home-icon"></div>
+        </div>
+        <div class="nav-button" data-section="games">
+            <div class="controller-icon"></div>
+        </div>
+        <div class="nav-button" data-section="settings">
+            <div class="padlock-icon"></div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Section -->
+        <section id="home" class="content-section active">
+            <h1 class="section-title">🎮 Games</h1>
+            <p class="welcome-text">
+                Browse 100+ free games. Click any game to play
+            </p>
+        </section>
+
+        <!-- Games Section -->
+        <section id="games" class="content-section">
+            <h1 class="section-title">🎮 Games (<span id="gamesCount">0</span>)</h1>
+            <p class="welcome-text">Click any game to play fullscreen:</p>
+            <div class="games-grid" id="gamesGrid"></div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="content-section">
+            <h1 class="section-title">Cloaking</h1>
+            <div class="settings-menu">
+                <div class="setting-group">
+                    <label for="tabName">Tab Name:</label>
+                    <div class="tab-input">
+                        <input type="text" id="tabName" placeholder="Lanyon Math Tutoring" />
+                        <button id="setTabName" class="settings-btn">Set</button>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label for="faviconUrl">Favicon:</label>
+                    <div class="tab-input">
+                        <input type="text" id="faviconUrl" placeholder="https://classroom.google.com" />
+                        <button id="setFavicon" class="settings-btn">Set</button>
+                    </div>
+                </div>
+                <div class="buttons-container">
+                    <button id="openIframe" class="settings-btn">🖥️ Open Iframe</button>
+                </div>
             </div>
-            <div class="nav-button" data-section="games">
-                <div class="controller-icon"></div>
-            </div>
-            <div class="nav-button" data-section="unblocker">
-                <div class="padlock-icon"></div>
-            </div>
-        </nav>
+        </section>
+    </main>
+</div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Home Section -->
-            <section id="home" class="content-section active">
-                <h1 class="section-title">🎮 Games</h1>
-                <p class="welcome-text">
-                    Browse 100+ free games. Click any game to play
-                </p>
-            </section>
+<!-- 🎮 GAMING HUB ENGINE - All in one script -->
+<script>
+    // 🎮 GAMING HUB ENGINE - Handles all game fetching & execution
+    const RAW_BASE_URL = 'https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/master/offline/';
 
-            <!-- Games Section -->
-            <section id="games" class="content-section">
-                <h1 class="section-title">🎮 Games (<span id="gamesCount">0</span>)</h1>
-                <p class="welcome-text">Click any game to play fullscreen:</p>
-                <div class="games-grid" id="gamesGrid"></div>
-                <div id="errorMessage" class="error-message" style="display: none;"></div>
-            </section>
+    // Global game data
+    let allGames = [];
 
-// Replace the entire "Unblocker" section with this HTML inside your main HTML file
-// and add this script block inside your existing <script> tag
+    // Navigation setup
+    const navButtons = document.querySelectorAll('.nav-button');
+    const sections = document.querySelectorAll('.content-section');
 
-// --- Begin Replacement HTML ---
-// (Replace the <section id="unblocker" ...> block with this)
-const settingsSectionHTML = `
-<section id="settings" class="content-section">
-  <h1 class="section-title">Cloaking</h1>
-  <div class="settings-menu">
-    <div class="setting-group">
-      <label for="tabName">Tab Name:</label>
-      <div class="tab-input">
-        <input type="text" id="tabName" placeholder="Default">
-        <button id="setTabName">Set</button>
-      </div>
-    </div>
-    <div class="buttons-container">
-      <button id="openBlank" class="settings-btn">Open about:blank</button>
-    </div>
-  </div>
-</section>
-`;
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetSection = button.getAttribute('data-section');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            sections.forEach(section => section.classList.remove('active'));
+            button.classList.add('active');
+            document.getElementById(targetSection).classList.add('active');
+        });
+    });
 
-// Insert this HTML into your page replacing the old unblocker section
-document.querySelector('#main-content').innerHTML = `
-  ${document.querySelector('#main-content').innerHTML.replace(
-    /<section id="unblocker"[\s\S]*?<\/section>/,
-    ''
-  )}
-  ${settingsSectionHTML}
-`;
-
-// --- End Replacement HTML ---
-
-// Add this script inside your existing <script> tag
-// to handle the new buttons
-document.addEventListener('DOMContentLoaded', () => {
-  // Set tab name
-  document.getElementById('setTabName').addEventListener('click', () => {
-    const name = document.getElementById('tabName').value.trim();
-    document.title = name || 'Lanyon Math Tutoring';
-  });
-
-  // Open about:blank in new tab with fullscreen iframe
-  document.getElementById('openBlank').addEventListener('click', () => {
-    const newTab = window.open('about:blank', '_blank');
-    if (newTab) {
-      newTab.document.write(`
-        <html>
-          <head>
-            <title>Fullscreen Site</title>
-            <style>
-              html, body {
-                margin: 0;
-                padding: 0;
-                height: 100%;
-                overflow: hidden;
-              }
-              iframe {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                border: none;
-              }
-            </style>
-          </head>
-          <body>
-            <iframe src="site/index.html"></iframe>
-          </body>
-        </html>
-      `);
-      newTab.document.close();
+    // Format filename → readable title
+    function formatGameName(filename) {
+        return filename
+            .replace(/\.html$/i, '')
+            .replace(/([a-z])([A-Z])/g, '$1 $2')
+            .replace(/([0-9]+)([a-zA-Z])/g, '$1 $2')
+            .replace(/([a-zA-Z])([0-9]+)/g, '$1 $2')
+            .replace(/[-_]/g, ' ')
+            .replace(/\b\w/g, l => l.toUpperCase())
+            .trim();
     }
-  });
-});
 
-    <!-- EXTERNAL GAME ENGINE -->
-    <script src="games-engine.js"></script>
+    // Game descriptions
+    function getGameDescription(filename) {
+        const name = filename.toLowerCase().replace(/\.html$/i, '');
+        const descriptions = {
+            '1on1soccer': '1 vs 1 Soccer Match',
+            '2048': 'Slide tiles to 2048', 
+            'asteroids': 'Destroy asteroids!',
+            'breakout': 'Break all bricks',
+            'flappybird': 'Fly through pipes',
+            'pacman': 'Eat all dots',
+            'pong': 'Classic paddle battle',
+            'snake': 'Grow your snake',
+            'tetris': 'Stack falling blocks',
+            'tic-tac-toe': 'X vs O battle',
+            'memory': 'Match the cards',
+            'minesweeper': 'Find safe tiles',
+            'connect4': 'Get 4 in a row'
+        };
+        return descriptions[name] || 'Classic HTML5 game';
+    }
+
+    // 🚀 FETCH GAMES FROM GITHUB
+    async function fetchGames() {
+        try {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const gamesGrid = document.getElementById('gamesGrid');
+            const gamesCount = document.getElementById('gamesCount');
+            const errorMessage = document.getElementById('errorMessage');
+
+            const apiUrl = `https://api.github.com/repos/CoolDude2349/Offline-HTML-Games-Pack/contents/offline?ref=master`;
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            // Filter & process HTML games
+            allGames = data
+                .filter(item => item.name.toLowerCase().endsWith('.html'))
+                .map(game => ({
+                    name: game.name,
+                    title: formatGameName(game.name),
+                    description: getGameDescription(game.name),
+                    rawUrl: RAW_BASE_URL + game.name
+                }))
+                .sort((a, b) => a.title.localeCompare(b.title));
+
+            // Hide loading
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => loadingScreen.style.display = 'none', 500);
+
+            // Update UI
+            gamesCount.textContent = allGames.length;
+            gamesGrid.innerHTML = allGames.map(game => `
+                <div class="game-card" data-game-raw="${game.rawUrl}" data-game-name="${game.name}">
+                    <h3>${game.title}</h3>
+                    <p>${game.description}</p>
+                    <div class="launch-indicator">🚀 Click to Play</div>
+                </div>
+            `).join('');
+
+            console.log(`✅ Engine loaded ${allGames.length} games`);
+
+        } catch (error) {
+            console.error('Engine error:', error);
+            document.getElementById('loadingScreen').innerHTML = `
+                <div style="text-align: center; color: #f85149;">
+                    <div style="font-size: 3em; margin-bottom: 20px;">⚠️</div>
+                    <div style="font-size: 1.5em; margin-bottom: 10px;">Games failed to load</div>
+                    <div style="color: #b0b0d0; margin-bottom: 20px;">Check internet</div>
+                    <button onclick="location.reload()" style="
+                        background: linear-gradient(45deg, #58a6ff, #79c0ff); color: white; 
+                        border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;
+                    ">🔄 Retry</button>
+                </div>
+            `;
+        }
+    }
+
+    // 🎮 EXECUTE GAME CODE DIRECTLY (Makes games playable!)
+    document.addEventListener('click', async (e) => {
+        if (e.target.closest('.game-card')) {
+            const card = e.target.closest('.game-card');
+            const gameRawUrl = card.getAttribute('data-game-raw');
+            const gameName = card.getAttribute('data-game-name');
+            
+            try {
+                card.innerHTML = '<div style="color: #58a6ff; font-size: 1.1em;">Loading game...</div>';
+                
+                // FETCH & EXECUTE GAME HTML
+                const response = await fetch(gameRawUrl);
+                const gameHTML = await response.text();
+                
+                // LAUNCH FULLSCREEN GAME
+                const gameWindow = window.open('', '_blank', 'fullscreen=yes');
+                gameWindow.document.open();
+                gameWindow.document.write(gameHTML);
+                gameWindow.document.close();
+                gameWindow.focus();
+                
+                if (gameWindow.document.fullscreenEnabled) {
+                    gameWindow.document.documentElement.requestFullscreen();
+                }
+                
+                // Visual feedback
+                setTimeout(() => {
+                    const game = allGames.find(g => g.name === gameName);
+                    if (game) {
+                        card.innerHTML = `
+                            <h3>${game.title}</h3>
+                            <p>${game.description}</p>
+                            <div class="launch-indicator">✅ Playing!</div>
+                        `;
+                    }
+                    setTimeout(() => {
+                        if (game) {
+                            card.innerHTML = `
+                                <h3>${game.title}</h3>
+                                <p>${game.description}</p>
+                                <div class="launch-indicator">🚀 Click to Play</div>
+                            `;
+                        }
+                    }, 1500);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Game error:', error);
+                if (gameName) {
+                    const game = allGames.find(g => g.name === gameName);
+                    if (game) {
+                        card.innerHTML = '<div style="color: #f85149;">Failed to load</div>';
+                        setTimeout(() => {
+                            card.innerHTML = `
+                                <h3>${game.title}</h3>
+                                <p>${game.description}</p>
+                                <div class="launch-indicator">🚀 Click to Play</div>
+                            `;
+                        }, 2000);
+                    }
+                }
+            }
+        }
+    });
+
+    // Settings functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set tab name
+        document.getElementById('setTabName').addEventListener('click', () => {
+            const name = document.getElementById('tabName').value.trim();
+            document.title = name || 'Lanyon Math Tutoring';
+        });
+
+        // Set favicon (handles direct URLs and website favicons)
+        document.getElementById('setFavicon').addEventListener('click', async () => {
+            const url = document.getElementById('faviconUrl').value.trim();
+            if (!url) return;
+
+            try {
+                let faviconUrl = url;
+                
+                // If it's not an image URL, try to get favicon from website
+                if (!url.match(/\.(png|jpg|jpeg|gif|ico|svg)$/i)) {
+                    try {
+                        // Try common favicon locations
+                        const testUrls = [
+                            `${url}/favicon.ico`,
+                            `${url}/favicon.png`,
+                            `${url}/icon.png`,
+                            `https://www.google.com/s2/favicons?domain=${url}`
+                        ];
+                        
+                        for (let testUrl of testUrls) {
+                            try {
+                                const response = await fetch(testUrl, { method: 'HEAD' });
+                                if (response.ok) {
+                                    faviconUrl = testUrl;
+                                    break;
+                                }
+                            } catch (e) {
+                                continue;
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Using Google favicon service');
+                        faviconUrl = `https://www.google.com/s2/favicons?domain=${url}`;
+                    }
+                }
+
+                // Set favicon
+                const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+                link.type = 'image/x-icon';
+                link.rel = 'icon';
+                link.href = faviconUrl;
+                document.head.appendChild(link);
+
+                // Also set as shortcut icon
+                const shortcutLink = document.querySelector("link[rel='shortcut icon']") || document.createElement('link');
+                shortcutLink.rel = 'shortcut icon';
+                shortcutLink.href = faviconUrl;
+                document.head.appendChild(shortcutLink);
+
+                console.log('✅ Favicon set:', faviconUrl);
+            } catch (error) {
+                console.error('Favicon error:', error);
+            }
+        });
+
+        // Open iframe with the same script embedded
+        document.getElementById('openIframe').addEventListener('click', () => {
+            const newTab = window.open('about:blank', '_blank');
+            if (newTab) {
+                newTab.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <title>Lanyon Math Tutoring</title>
+                        <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            html, body { 
+                                height: 100vh; 
+                                overflow: hidden; 
+                                background: linear-gradient(135deg, #0a0a23 0%, #1a1a3e 50%, #0f0f2a 100%);
+                            }
+                            iframe {
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                width: 100vw;
+                                height: 100vh;
+                                border: none;
+                                background: transparent;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <iframe src="https://lanyon-tutoring-help.github.io/math-help/" allowfullscreen allow="fullscreen *; autoplay *; pointer-lock *; camera *; microphone *"></iframe>
+                    </body>
+                    </html>
+                `);
+                newTab.document.close();
+                newTab.focus();
+            }
+        });
+    });
+
+    // Prevent right-click on games
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.closest('.game-card')) e.preventDefault();
+    });
+
+    // 🏁 Initialize when DOM loads
+    window.addEventListener('load', fetchGames);
+</script>
 </body>
 </html>
