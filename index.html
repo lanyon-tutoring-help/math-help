@@ -122,7 +122,7 @@
         box-shadow: 0 0 20px rgba(248, 81, 73, 0.5);
     }
 
-    /* Icons */
+    /* Icons styles (keep your existing icon styles here) */
     .home-icon {
         width: 28px;
         height: 28px;
@@ -208,11 +208,12 @@
         border-radius: 0 0 4px 4px;
     }
 
-    /* Main Content */
+    /* Main Content styles (kept same) */
     .main-content {
         flex: 1;
         padding: 40px;
         overflow-y: auto;
+        position: relative;
     }
 
     .content-section {
@@ -445,10 +446,27 @@
     .buttons-container {
         margin-top: 20px;
     }
+
+    /* Styles for overlay iframe (fullscreen except sidebar) */
+    #unblockerOverlay {
+        position: fixed;
+        top: 0;
+        left: 80px; /* after the sidebar width */
+        width: calc(100vw - 80px);
+        height: 100vh;
+        background: #000;
+        display: none;
+        z-index: 9998;
+    }
+    #unblockerOverlay iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
 </style>
 </head>
 <body>
-<!-- Loading Screen -->
+<!-- Loading Screen ... -->
 <div class="loading-screen" id="loadingScreen">
     <div class="spinner"></div>
     <div style="font-size: 1.2em; color: #58a6ff; margin-bottom: 10px;">Initializing...</div>
@@ -463,6 +481,12 @@
         </div>
         <div class="nav-button" data-section="games">
             <div class="controller-icon"></div>
+        </div>
+        <!-- New Unblocker button -->
+        <div class="nav-button" data-section="unblocker">
+            <div style="width: 32px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                🔓
+            </div>
         </div>
         <div class="nav-button" data-section="settings">
             <div class="padlock-icon"></div>
@@ -485,6 +509,14 @@
             <p class="welcome-text">Click any game to play fullscreen:</p>
             <div class="games-grid" id="gamesGrid"></div>
             <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </section>
+
+        <!-- Unblocker Section -->
+        <section id="unblocker" class="content-section">
+            <h1 class="section-title">🔓 Unblocker</h1>
+            <div style="padding: 20px; font-size: 1.2em; color: #b0b0d0;">
+                Loading Unblocker...
+            </div>
         </section>
 
         <!-- Settings Section -->
@@ -513,9 +545,13 @@
     </main>
 </div>
 
-<!-- 🎮 GAMING HUB ENGINE - All in one script -->
+<!-- Fullscreen Unblocker Overlay -->
+<div id="unblockerOverlay">
+    <iframe src="https://web-proxy--coder83231.replit.app/browser/" allowfullscreen></iframe>
+</div>
+
 <script>
-    // 🎮 GAMING HUB ENGINE - Handles all game fetching & execution
+    // Existing variables and functions
     const RAW_BASE_URL = 'https://raw.githubusercontent.com/CoolDude2349/Offline-HTML-Games-Pack/master/offline/';
 
     // Global game data
@@ -525,17 +561,30 @@
     const navButtons = document.querySelectorAll('.nav-button');
     const sections = document.querySelectorAll('.content-section');
 
+    // Function to switch sections
+    function switchSection(targetSection) {
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        sections.forEach(section => section.classList.remove('active'));
+        document.querySelector(`.nav-button[data-section="${targetSection}"]`).classList.add('active');
+        document.getElementById(targetSection).classList.add('active');
+
+        // Show overlay if unblocker
+        if (targetSection === 'unblocker') {
+            overlay.style.display = 'block';
+        } else {
+            overlay.style.display = 'none';
+        }
+    }
+
+    // Attach event listeners to nav buttons
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
-            const targetSection = button.getAttribute('data-section');
-            navButtons.forEach(btn => btn.classList.remove('active'));
-            sections.forEach(section => section.classList.remove('active'));
-            button.classList.add('active');
-            document.getElementById(targetSection).classList.add('active');
+            const target = button.getAttribute('data-section');
+            switchSection(target);
         });
     });
 
-    // Format filename → readable title
+    // Function to format game name
     function formatGameName(filename) {
         return filename
             .replace(/\.html$/i, '')
@@ -547,7 +596,7 @@
             .trim();
     }
 
-    // Game descriptions
+    // Function to get description
     function getGameDescription(filename) {
         const name = filename.toLowerCase().replace(/\.html$/i, '');
         const descriptions = {
@@ -568,7 +617,7 @@
         return descriptions[name] || 'Classic HTML5 game';
     }
 
-    // 🚀 FETCH GAMES FROM GITHUB
+    // Fetch games
     async function fetchGames() {
         try {
             const loadingScreen = document.getElementById('loadingScreen');
@@ -580,7 +629,6 @@
             const response = await fetch(apiUrl);
             const data = await response.json();
 
-            // Filter & process HTML games
             allGames = data
                 .filter(item => item.name.toLowerCase().endsWith('.html'))
                 .map(game => ({
@@ -604,9 +652,6 @@
                     <div class="launch-indicator">🚀 Click to Play</div>
                 </div>
             `).join('');
-
-            console.log(`✅ Engine loaded ${allGames.length} games`);
-
         } catch (error) {
             console.error('Engine error:', error);
             document.getElementById('loadingScreen').innerHTML = `
@@ -623,32 +668,29 @@
         }
     }
 
-    // 🎮 EXECUTE GAME CODE DIRECTLY (Makes games playable!)
+    // Handle game clicks
     document.addEventListener('click', async (e) => {
         if (e.target.closest('.game-card')) {
             const card = e.target.closest('.game-card');
             const gameRawUrl = card.getAttribute('data-game-raw');
             const gameName = card.getAttribute('data-game-name');
-            
+
             try {
                 card.innerHTML = '<div style="color: #58a6ff; font-size: 1.1em;">Loading game...</div>';
-                
-                // FETCH & EXECUTE GAME HTML
+
                 const response = await fetch(gameRawUrl);
                 const gameHTML = await response.text();
-                
-                // LAUNCH FULLSCREEN GAME
+
                 const gameWindow = window.open('', '_blank', 'fullscreen=yes');
                 gameWindow.document.open();
                 gameWindow.document.write(gameHTML);
                 gameWindow.document.close();
                 gameWindow.focus();
-                
+
                 if (gameWindow.document.fullscreenEnabled) {
                     gameWindow.document.documentElement.requestFullscreen();
                 }
-                
-                // Visual feedback
+
                 setTimeout(() => {
                     const game = allGames.find(g => g.name === gameName);
                     if (game) {
@@ -668,7 +710,6 @@
                         }
                     }, 1500);
                 }, 1000);
-                
             } catch (error) {
                 console.error('Game error:', error);
                 if (gameName) {
@@ -688,107 +729,118 @@
         }
     });
 
-    // Settings functionality
-    document.addEventListener('DOMContentLoaded', () => {
-        // Set tab name
-        document.getElementById('setTabName').addEventListener('click', () => {
-            const name = document.getElementById('tabName').value.trim();
-            document.title = name || 'Lanyon Math Tutoring';
+    // Overlay controls
+    const overlay = document.getElementById('unblockerOverlay');
+
+    function showUnblocker() {
+        overlay.style.display = 'block';
+    }
+    function hideUnblocker() {
+        overlay.style.display = 'none';
+    }
+
+    // Initialize
+    hideUnblocker();
+
+    // Switch sections including overlay toggle
+    document.querySelectorAll('.nav-button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const section = btn.getAttribute('data-section');
+            // Show overlay if Unblocker
+            if (section === 'unblocker') {
+                showUnblocker();
+            } else {
+                hideUnblocker();
+            }
         });
+    });
 
-        // Set favicon (handles direct URLs and website favicons)
-        document.getElementById('setFavicon').addEventListener('click', async () => {
-            const url = document.getElementById('faviconUrl').value.trim();
-            if (!url) return;
+    // Set tab name
+    document.getElementById('setTabName').addEventListener('click', () => {
+        const name = document.getElementById('tabName').value.trim();
+        document.title = name || 'Lanyon Math Tutoring';
+    });
 
-            try {
-                let faviconUrl = url;
-                
-                // If it's not an image URL, try to get favicon from website
-                if (!url.match(/\.(png|jpg|jpeg|gif|ico|svg)$/i)) {
-                    try {
-                        // Try common favicon locations
-                        const testUrls = [
-                            `${url}/favicon.ico`,
-                            `${url}/favicon.png`,
-                            `${url}/icon.png`,
-                            `https://www.google.com/s2/favicons?domain=${url}`
-                        ];
-                        
-                        for (let testUrl of testUrls) {
-                            try {
-                                const response = await fetch(testUrl, { method: 'HEAD' });
-                                if (response.ok) {
-                                    faviconUrl = testUrl;
-                                    break;
-                                }
-                            } catch (e) {
-                                continue;
+    // Set favicon
+    document.getElementById('setFavicon').addEventListener('click', async () => {
+        const url = document.getElementById('faviconUrl').value.trim();
+        if (!url) return;
+
+        try {
+            let faviconUrl = url;
+            if (!url.match(/\.(png|jpg|jpeg|gif|ico|svg)$/i)) {
+                try {
+                    const testUrls = [
+                        `${url}/favicon.ico`,
+                        `${url}/favicon.png`,
+                        `${url}/icon.png`,
+                        `https://www.google.com/s2/favicons?domain=${url}`
+                    ];
+                    for (let testUrl of testUrls) {
+                        try {
+                            const response = await fetch(testUrl, { method: 'HEAD' });
+                            if (response.ok) {
+                                faviconUrl = testUrl;
+                                break;
                             }
-                        }
-                    } catch (e) {
-                        console.log('Using Google favicon service');
-                        faviconUrl = `https://www.google.com/s2/favicons?domain=${url}`;
+                        } catch (e) {}
                     }
+                } catch (e) {
+                    faviconUrl = `https://www.google.com/s2/favicons?domain=${url}`;
                 }
-
-                // Set favicon
-                const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-                link.type = 'image/x-icon';
-                link.rel = 'icon';
-                link.href = faviconUrl;
-                document.head.appendChild(link);
-
-                // Also set as shortcut icon
-                const shortcutLink = document.querySelector("link[rel='shortcut icon']") || document.createElement('link');
-                shortcutLink.rel = 'shortcut icon';
-                shortcutLink.href = faviconUrl;
-                document.head.appendChild(shortcutLink);
-
-                console.log('✅ Favicon set:', faviconUrl);
-            } catch (error) {
-                console.error('Favicon error:', error);
             }
-        });
+            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'icon';
+            link.href = faviconUrl;
+            document.head.appendChild(link);
+            const shortcutLink = document.querySelector("link[rel='shortcut icon']") || document.createElement('link');
+            shortcutLink.rel = 'shortcut icon';
+            shortcutLink.href = faviconUrl;
+            document.head.appendChild(shortcutLink);
+            console.log('✅ Favicon set:', faviconUrl);
+        } catch (error) {
+            console.error('Favicon error:', error);
+        }
+    });
 
-        // Open iframe with the same script embedded
-        document.getElementById('openIframe').addEventListener('click', () => {
-            const newTab = window.open('about:blank', '_blank');
-            if (newTab) {
-                newTab.document.write(`
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8" />
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                        <title>Lanyon Math Tutoring</title>
-                        <style>
-                            * { margin: 0; padding: 0; box-sizing: border-box; }
-                            html, body { 
-                                height: 100vh; 
-                                overflow: hidden; 
-                                background: linear-gradient(135deg, #0a0a23 0%, #1a1a3e 50%, #0f0f2a 100%);
-                            }
-                            iframe {
-                                position: fixed;
-                                top: 0;
-                                left: 0;
-                                width: 100vw;
-                                height: 100vh;
-                                border: none;
-                                background: transparent;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <iframe src="https://lanyon-tutoring-help.github.io/math-help/" allowfullscreen allow="fullscreen *; autoplay *; pointer-lock *; camera *; microphone *"></iframe>
-                    </body>
-                    </html>
-                `);
-                newTab.document.close();
-                newTab.focus();
-            }
-        });
+    // Open iframe in new tab
+    document.getElementById('openIframe').addEventListener('click', () => {
+        const newTab = window.open('about:blank', '_blank');
+        if (newTab) {
+            newTab.document.write(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>Lanyon Math Tutoring</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        html, body { 
+                            height: 100vh; 
+                            overflow: hidden; 
+                            background: linear-gradient(135deg, #0a0a23 0%, #1a1a3e 50%, #0f0f2a 100%);
+                        }
+                        iframe {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100vw;
+                            height: 100vh;
+                            border: none;
+                            background: transparent;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <iframe src="https://lanyon-tutoring-help.github.io/math-help/" allowfullscreen allow="fullscreen *; autoplay *; pointer-lock *; camera *; microphone *"></iframe>
+                </body>
+                </html>
+            `);
+            newTab.document.close();
+            newTab.focus();
+        }
     });
 
     // Prevent right-click on games
@@ -796,7 +848,7 @@
         if (e.target.closest('.game-card')) e.preventDefault();
     });
 
-    // 🏁 Initialize when DOM loads
+    // Initialize on load
     window.addEventListener('load', fetchGames);
 </script>
 </body>
